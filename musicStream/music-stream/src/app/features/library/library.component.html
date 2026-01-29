@@ -1,0 +1,255 @@
+<div class="min-h-screen bg-[#FAFAFA] text-zinc-900 font-sans pb-32">
+
+    <header class="sticky top-0 z-40 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-zinc-200/60 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-lime-400">
+                    <i class="bi bi-soundwave text-lg"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-zinc-900">Audio<span class="text-zinc-400">Flow</span>
+                </h1>
+            </div>
+
+            <a routerLink="/add-track"
+                class="group flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-full hover:bg-zinc-800 transition-all active:scale-95 shadow-lg shadow-zinc-900/10">
+                <span>Ajouter</span>
+                <i class="bi bi-plus-lg text-lime-400 group-hover:rotate-90 transition-transform"></i>
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10">
+
+        <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-zinc-900">Ma Collection</h2>
+                <p class="text-zinc-500 mt-1 text-sm">Vos morceaux locaux favoris.</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div class="relative group">
+                    <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-lime-600 transition-colors"></i>
+                    <input type="text" [(ngModel)]="searchQuery" placeholder="Rechercher un titre, artiste..."
+                        class="w-full sm:w-64 pl-10 pr-4 py-2 bg-white border border-zinc-200 rounded-xl focus:border-lime-500 focus:ring-4 focus:ring-lime-500/10 transition-all text-sm font-medium">
+                </div>
+
+                <div class="relative">
+                    <select [ngModel]="selectedFilter()" (ngModelChange)="selectedFilter.set($event)"
+                        class="w-full sm:w-40 pl-4 pr-10 py-2 bg-white border border-zinc-200 rounded-xl appearance-none focus:border-lime-500 focus:ring-4 focus:ring-lime-500/10 transition-all text-sm font-medium cursor-pointer">
+                        <option value="Tout">Tous les genres</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Rock">Rock</option>
+                        <option value="Rap">Rap</option>
+                        <option value="Jazz">Jazz</option>
+                        <option value="Electronic">Electronic</option>
+                        <option value="Classical">Classical</option>
+                    </select>
+                    <i class="bi bi-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 text-xs pointer-events-none"></i>
+                </div>
+            </div>
+        </div>
+
+        @if (filteredTracks().length > 0) {
+
+        <div cdkDropList 
+             cdkDropListOrientation="mixed" 
+             (cdkDropListDropped)="drop($event)"
+             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+            @for (track of filteredTracks(); track track.id) {
+
+            <div cdkDrag 
+                 [cdkDragDisabled]="searchQuery() !== '' || selectedFilter() !== 'Tout'"
+                 class="group relative bg-white rounded-2xl border border-zinc-200 hover:border-zinc-300 transition-all duration-300 hover:-translate-y-1 cursor-move">
+
+                <div *cdkDragPreview class="bg-white rounded-2xl shadow-2xl p-4 w-64 border-2 border-lime-500 opacity-90 rotate-3">
+                    <div class="font-bold text-zinc-900">{{ track.title }}</div>
+                    <div class="text-xs text-zinc-500">{{ track.artist }}</div>
+                </div>
+                
+                <div *cdkDragPlaceholder class="opacity-0"></div>
+
+                <div class="p-3" >
+                    <div class="relative aspect-square w-full overflow-hidden rounded-xl bg-zinc-100" >
+                        @if (track.cover) {
+                        <img [src]="getCoverUrl(track)" [alt]="track.title"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 saturate-0 group-hover:saturate-100"
+                            onerror="this.style.display='none'">
+                        } @else {
+                        <div class="w-full h-full flex items-center justify-center bg-zinc-50 text-zinc-300">
+                            <i class="bi bi-vinyl text-5xl opacity-50"></i>
+                        </div>
+                        }
+
+                        <span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-[10px] font-bold uppercase tracking-wide rounded-md border border-zinc-100 text-zinc-900">
+                            {{ track.category }}
+                        </span>
+
+                        <div (click)="onPlay(track)"
+                            class="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <div class="w-14 h-14 bg-zinc-900 text-white rounded-full flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
+                                @if(playerService.currentTrack()?.id === track.id && playerService.isPlaying()){
+                                <i class="bi bi-pause-fill text-2xl"></i>
+                                } @else {
+                                <i class="bi bi-play-fill text-2xl ml-1"></i>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-5 pb-5 pt-1">
+                    <div class="flex justify-between items-start">
+                        <div class="w-full">
+                            <h3 class="font-bold text-zinc-900 truncate pr-4" [title]="track.title">
+                                {{ track.title }}
+                            </h3>
+                            <p class="text-sm text-zinc-500 truncate mt-0.5">{{ track.artist }}</p>
+                        </div>
+                        @if(playerService.currentTrack()?.id === track.id && playerService.isPlaying()){
+                        <div class="flex gap-0.5 items-end h-4 pb-1">
+                            <div class="w-1 bg-lime-500 animate-[bounce_0.8s_infinite] h-2"></div>
+                            <div class="w-1 bg-lime-500 animate-[bounce_1s_infinite] h-4"></div>
+                            <div class="w-1 bg-lime-500 animate-[bounce_1.2s_infinite] h-3"></div>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs font-medium text-zinc-400">
+                        <span class="flex items-center gap-1.5">
+                            <i class="bi bi-clock"></i> {{ track.duration | formatTime }}
+                        </span>
+
+                        <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-2 py-1 rounded-full shadow-sm">
+                            
+                            <a [routerLink]="['/track', track.id]" (click)="$event.stopPropagation()"
+                               class="text-zinc-400 hover:text-zinc-900 transition-colors" title="Détails">
+                                <i class="bi bi-info-circle text-lg"></i>
+                            </a>
+
+                            <a [routerLink]="['/edit-track', track.id]" (click)="$event.stopPropagation()"
+                                class="text-zinc-400 hover:text-blue-600 transition-colors" title="Modifier">
+                                <i class="bi bi-pencil-square text-lg"></i>
+                            </a>
+
+                            <button (click)="deleteTrack(track.id!, $event)"
+                                class="hover:text-red-500 transition-colors" title="Supprimer">
+                                <i class="bi bi-trash text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                @if (searchQuery() === '' && selectedFilter() === 'Tout') {
+                    <div class="absolute top-2 right-2 p-1.5 bg-black/20 text-white rounded-md opacity-0 group-hover:opacity-100 backdrop-blur-sm z-30 pointer-events-none">
+                        <i class="bi bi-grip-vertical"></i>
+                    </div>
+                }
+            </div>
+
+            } @empty {
+            <div class="col-span-full py-20 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-zinc-50/50">
+                <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white border border-zinc-200 shadow-sm">
+                    <i class="bi bi-music-note-list text-2xl text-zinc-400"></i>
+                </div>
+                <h3 class="text-zinc-900 font-bold">Aucune piste</h3>
+                <p class="text-zinc-500 text-sm mt-1 mb-6">Votre bibliothèque est vide pour le moment.</p>
+                <a routerLink="/add-track"
+                    class="text-sm font-bold text-zinc-900 underline underline-offset-4 decoration-lime-400 hover:decoration-2">
+                    Ajouter un morceau
+                </a>
+            </div>
+            }
+
+        </div>
+        } @else {
+            <div class="col-span-full py-20 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-zinc-50/50">
+                <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white border border-zinc-200 shadow-sm">
+                    <i class="bi bi-search text-2xl text-zinc-400"></i>
+                </div>
+                <h3 class="text-zinc-900 font-bold">Aucun résultat</h3>
+                <p class="text-zinc-500 text-sm mt-1">Essayez de modifier votre recherche ou le filtre.</p>
+                @if(searchQuery()) {
+                <button (click)="searchQuery.set('')" class="mt-4 text-lime-600 font-bold text-sm hover:underline">
+                    Effacer la recherche
+                </button>
+                }
+            </div>
+        }
+    </main>
+
+    @if (playerService.currentTrack()) {
+    <div class="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4">
+        <div class="w-full max-w-3xl bg-[#18181b] text-white rounded-2xl shadow-2xl shadow-zinc-900/30 p-2 pr-6 flex items-center gap-4 border border-zinc-800 backdrop-blur-xl">
+
+            <div class="relative shrink-0">
+                @if (playerService.currentTrack()?.cover) {
+                <img [src]="getCoverUrl(playerService.currentTrack()!)"
+                    class="w-14 h-14 rounded-xl object-cover bg-zinc-800" onerror="this.style.display='none'">
+                } @else {
+                <div class="w-14 h-14 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-500">
+                    <i class="bi bi-music-note"></i>
+                </div>
+                }
+            </div>
+
+            <div class="flex-grow min-w-0 flex flex-col justify-center py-1">
+                <div class="flex justify-between items-baseline mb-1">
+                    <div class="truncate pr-4">
+                        <span class="font-bold text-sm text-zinc-100">{{ playerService.currentTrack()?.title }}</span>
+                        <span class="text-xs text-zinc-400 mx-2">•</span>
+                        <span class="text-xs text-zinc-400">{{ playerService.currentTrack()?.artist }}</span>
+                    </div>
+                    <span class="text-[10px] text-zinc-500 font-mono tracking-wider">
+                        {{ playerService.currentTime() | formatTime }} / {{ playerService.duration() | formatTime }}
+                    </span>
+                </div>
+
+                <div class="relative w-full h-1 bg-zinc-700/50 rounded-full cursor-pointer group">
+                    <input type="range" [max]="playerService.duration()" [value]="playerService.currentTime()"
+                        (input)="onSeek($event)" class="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer">
+                    <div class="absolute h-full bg-lime-400 rounded-full group-hover:bg-lime-300 transition-colors"
+                        [style.width.%]="(playerService.currentTime() / (playerService.duration() || 1)) * 100">
+                        <div
+                            class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100 shadow-md">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 pl-2 border-l border-zinc-700/50">
+                
+                <button (click)="playerService.previous()"
+                    class="text-gray-400 hover:text-white transition-colors p-1">
+                    <i class="bi bi-skip-backward-fill text-xl"></i>
+                </button>
+
+                <button (click)="playerService.togglePlay()"
+                    class="w-10 h-10 flex items-center justify-center bg-white text-black rounded-full hover:scale-105 transition-transform shadow-lg">
+                    @if(playerService.isPlaying()) {
+                    <i class="bi bi-pause-fill text-xl"></i>
+                    } @else {
+                    <i class="bi bi-play-fill text-xl ml-0.5"></i>
+                    }
+                </button>
+
+                <button (click)="playerService.next()"
+                    class="text-gray-400 hover:text-white transition-colors p-1">
+                    <i class="bi bi-skip-forward-fill text-xl"></i>
+                </button>
+
+                <div class="hidden sm:flex items-center gap-2 group relative ml-2">
+                    <i class="bi bi-volume-up text-zinc-400 text-lg hover:text-white cursor-pointer"></i>
+                    <div class="w-0 overflow-hidden group-hover:w-16 transition-all duration-300">
+                        <input type="range" min="0" max="1" step="0.1" [value]="playerService.volume()"
+                            (input)="onVolume($event)"
+                            class="h-1 w-16 bg-zinc-600 rounded-lg appearance-none accent-lime-400 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    }
+
+</div>

@@ -1,0 +1,30 @@
+.card {
+  border-radius: 12px;
+  overflow: hidden; 
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px); 
+  }
+}
+
+.form-label {
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+.invalid-feedback {
+  font-size: 0.8rem;
+}
+
+input[type="file"]::file-selector-button {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #e9ecef;
+  }
+}

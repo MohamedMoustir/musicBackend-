@@ -1,0 +1,110 @@
+<div class="min-h-screen bg-[#FAFAFA] flex items-center justify-center py-12 px-4 sm:px-6 font-sans">
+    
+    @if (track) {
+    <div class="max-w-5xl w-full bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-zinc-100 flex flex-col md:flex-row relative">
+        
+        <a routerLink="/library" class="absolute top-6 right-6 z-20 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 transition-colors shadow-sm cursor-pointer">
+            <i class="bi bi-x-lg"></i>
+        </a>
+
+        <div class="md:w-5/12 bg-zinc-900 p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
+            
+            <div class="absolute top-0 right-0 w-64 h-64 bg-lime-500 rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500 rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
+
+            <div class="relative w-64 h-64 sm:w-80 sm:h-80 rounded-2xl overflow-hidden shadow-2xl mb-8 border-4 border-white/5 bg-zinc-800 z-10 group">
+                @if (track.cover) {
+                    <img [src]="getCoverUrl(track)" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                } @else {
+                    <div class="w-full h-full flex items-center justify-center text-zinc-600">
+                        <i class="bi bi-music-note-beamed text-8xl"></i>
+                    </div>
+                }
+            </div>
+
+            <button (click)="play()" 
+                    class="flex items-center gap-3 px-8 py-4 bg-lime-400 text-zinc-900 font-bold rounded-full hover:bg-lime-300 transition-all shadow-lg hover:shadow-lime-400/30 hover:-translate-y-1 active:translate-y-0 z-10">
+                @if(playerService.currentTrack()?.id === track.id && playerService.isPlaying()) {
+                    <i class="bi bi-pause-fill text-2xl"></i>
+                    <span>En lecture...</span>
+                } @else {
+                    <i class="bi bi-play-fill text-2xl"></i>
+                    <span>Écouter le morceau</span>
+                }
+            </button>
+        </div>
+
+        <div class="md:w-7/12 p-8 md:p-12 flex flex-col">
+            
+            <div class="flex justify-between items-start mb-8">
+                <span class="px-4 py-1.5 bg-zinc-100 text-zinc-600 rounded-full text-xs font-bold uppercase tracking-wider border border-zinc-200">
+                    {{ track.category }}
+                </span>
+                
+                <div class="flex gap-2">
+                    <a [routerLink]="['/edit-track', track.id]" 
+                       class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors" 
+                       title="Modifier">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <button (click)="delete()" 
+                            class="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors" 
+                            title="Supprimer">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h1 class="text-4xl md:text-5xl font-black text-zinc-900 mb-3 leading-tight tracking-tight">
+                    {{ track.title }}
+                </h1>
+                <p class="text-2xl text-zinc-500 font-medium flex items-center">
+                    <i class="bi bi-mic mr-3 opacity-50"></i>
+                    {{ track.artist }}
+                </p>
+            </div>
+
+            @if (track.description) {
+                <div class="mb-8 p-6 bg-zinc-50 rounded-2xl border border-zinc-100">
+                    <h3 class="text-xs font-bold text-zinc-400 uppercase mb-2">Description</h3>
+                    <p class="text-zinc-600 leading-relaxed">{{ track.description }}</p>
+                </div>
+            }
+
+            <div class="mt-auto grid grid-cols-3 gap-4 border-t border-zinc-100 pt-8">
+                
+                <div class="text-center md:text-left">
+                    <span class="block text-xs text-zinc-400 font-bold uppercase mb-1">Durée</span>
+                    <span class="text-xl font-bold text-zinc-900 flex items-center justify-center md:justify-start gap-2">
+                        <i class="bi bi-clock text-lime-600"></i>
+                        {{ track.duration | formatTime }}
+                    </span>
+                </div>
+
+                <div class="text-center md:text-left">
+                    <span class="block text-xs text-zinc-400 font-bold uppercase mb-1">Fichier</span>
+                    <span class="text-xl font-bold text-zinc-900 flex items-center justify-center md:justify-start gap-2">
+                        <i class="bi bi-hdd text-indigo-500"></i>
+                        {{ track.file ? (track.file.size / (1024*1024) | number:'1.2-2') + ' MB' : 'N/A' }}
+                    </span>
+                </div>
+
+                <div class="text-center md:text-left">
+                    <span class="block text-xs text-zinc-400 font-bold uppercase mb-1">Ajouté le</span>
+                    <span class="text-xl font-bold text-zinc-900 flex items-center justify-center md:justify-start gap-2">
+                        <i class="bi bi-calendar4 text-zinc-500"></i>
+                        {{ track.addedDate | date:'dd MMM yyyy' }}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    } @else {
+        <div class="animate-pulse flex flex-col items-center">
+            <div class="w-12 h-12 border-4 border-zinc-200 border-t-zinc-900 rounded-full animate-spin mb-4"></div>
+            <p class="text-zinc-500 font-medium">Chargement des détails...</p>
+        </div>
+    }
+</div>

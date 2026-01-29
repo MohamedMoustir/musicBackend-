@@ -1,0 +1,138 @@
+<div class="min-h-screen bg-[#FAFAFA] flex items-center justify-center py-12 px-4 font-sans">
+
+    <div class="w-full max-w-xl">
+        <a routerLink="/library"
+            class="inline-flex items-center text-sm font-semibold text-zinc-500 hover:text-zinc-900 mb-6 transition-colors">
+            <i class="bi bi-arrow-left mr-2"></i> Retour à la collection
+        </a>
+
+        <div class="bg-white border border-zinc-200 rounded-3xl shadow-xl shadow-zinc-200/50 overflow-hidden">
+
+            <div class="px-8 pt-8 pb-6">
+                <h2 class="text-2xl font-bold text-zinc-900">
+                    {{ isEditMode ? 'Modifier le morceau' : 'Nouveau Morceau' }}
+                </h2>
+                <p class="text-zinc-500 text-sm mt-1">
+                    {{ isEditMode ? 'Mettez à jour les informations.' : 'Ajoutez un fichier audio à votre bibliothèque.'
+                    }}
+                </p>
+            </div>
+
+            <div class="px-8 pb-8">
+                @if (trackService.error()) {
+                <div
+                    class="mb-6 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm font-medium flex items-center">
+                    <i class="bi bi-exclamation-circle-fill mr-2"></i>
+                    {{ trackService.error() }}
+                </div>
+                }
+
+                <form [formGroup]="trackForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+                    <div>
+                        <label
+                            class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-1.5">Titre</label>
+                        <input type="text" formControlName="title"
+                            class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all placeholder-zinc-400 font-medium"
+                            placeholder="Nom de la piste">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-1.5">Artiste</label>
+                            <input type="text" formControlName="artist"
+                                class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all placeholder-zinc-400"
+                                placeholder="Nom de l'artiste">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-1.5">Genre</label>
+                            <select formControlName="category"
+                                class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all cursor-pointer">
+                                @for (cat of categories; track cat) {
+                                <option [value]="cat">{{ cat }}</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-1.5">Fichier
+                            Audio</label>
+
+                        @if (isEditMode && !selectedAudioFile) {
+                        <div class="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
+                            <i class="bi bi-music-note-beamed text-blue-500 mt-0.5"></i>
+                            <div class="text-sm text-blue-800">
+                                <span class="font-bold">Fichier actuel conservé.</span>
+                                <p class="text-xs mt-0.5 text-blue-600">Ne rien faire pour le garder, ou glissez un
+                                    nouveau pour remplacer.</p>
+                            </div>
+                        </div>
+                        }
+                        <label
+                            class="group flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-zinc-300 rounded-2xl cursor-pointer hover:border-lime-500 hover:bg-lime-50/10 transition-all duration-300"
+                            [class.border-lime-500]="selectedAudioFile" [class.bg-lime-50]="selectedAudioFile">
+
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                @if (selectedAudioFile) {
+                                <div class="flex items-center gap-2 text-zinc-900">
+                                    <i class="bi bi-file-music-fill text-lime-500 text-xl"></i>
+                                    <span class="font-bold text-sm">{{ selectedAudioFile.name }}</span>
+                                </div>
+                                <span class="text-xs text-zinc-400 mt-1">Cliquez pour changer</span>
+                                } @else {
+                                <i
+                                    class="bi bi-cloud-upload text-2xl text-zinc-400 group-hover:text-lime-500 transition-colors mb-2"></i>
+                                <p class="text-xs text-zinc-500 font-medium">
+                                    {{ isEditMode ? 'Glisser pour remplacer' : 'Glissez un fichier ou parcourez' }}
+                                </p>
+                                }
+                            </div>
+                            <input type="file" class="hidden" (change)="onAudioFileSelected($event)"
+                                accept=".mp3,.wav" />
+                        </label>
+                    </div>
+
+                    <div class="flex items-center gap-4 p-3 bg-zinc-50 rounded-xl border border-zinc-100">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-white border border-zinc-200 flex items-center justify-center text-zinc-400 shrink-0 overflow-hidden">
+                            @if(selectedCoverFile){
+                            <i class="bi bi-image-fill text-lime-500"></i>
+                            } @else if(isEditMode && existingTrack?.cover){
+                            <i class="bi bi-image text-zinc-600"></i>   
+                            }@else {
+                               <i class="bi bi-image"></i>
+                           }
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-lg bg-white border border-zinc-200 flex items-center justify-center text-zinc-400 shrink-0">
+                            <i class="bi bi-image"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <span class="block text-sm font-medium text-zinc-900">Image de couverture</span>
+                            <span class="block text-xs text-zinc-500">JPG ou PNG (Optionnel)</span>
+                        </div>
+                        <label
+                            class="px-3 py-1.5 bg-white border border-zinc-200 text-xs font-bold rounded-lg cursor-pointer hover:bg-zinc-100 transition-colors">
+                            Choisir
+                            <input type="file" (change)="onCoverSelected($event)" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+
+                    <button type="submit" [disabled]="trackService.isLoading()"
+                        class="w-full mt-4 bg-zinc-900 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-lg shadow-zinc-900/10 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                        @if (trackService.isLoading()) {
+                        <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Traitement...</span>
+                        } @else  {
+                        <span>{{ isEditMode ? 'Sauvegarder les modifications' : 'Enregistrer le morceau' }}</span>
+                        <i class="bi bi-arrow-right"></i>
+                        }
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

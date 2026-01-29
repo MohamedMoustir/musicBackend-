@@ -1,0 +1,38 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: music_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: musicstream_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./musicBackend/backend
+    container_name: music_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/musicstream_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 50MB
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 50MB
+    depends_on:
+      - db
+
+  # frontend:
+  #   build: ./musicStream/music-stream
+  #   container_name: music_frontend
+  #   ports:
+  #     - "4200:80"
+  #   depends_on:
+  #     - backend
+
+volumes:
+  postgres_data:
