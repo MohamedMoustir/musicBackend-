@@ -52,7 +52,14 @@ public class TrackController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"track-" + id + ".mp3\"")
                 .body(new ByteArrayResource(track.getAudioData()));
     }
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Track> updateTrack(
+            @PathVariable Long id,
+            @ModelAttribute CreateTrackDTO createTrackDTO) throws IOException {
 
+        Track updatedTrack = trackService.updateTrack(id, createTrackDTO);
+        return ResponseEntity.ok(updatedTrack);
+    }
     @GetMapping("/{id}/cover")
     public ResponseEntity<ByteArrayResource> getCover(@PathVariable Long id) {
         Track track = trackService.getTrackById(id);
@@ -67,4 +74,5 @@ public class TrackController {
     public void deleteTrack(@PathVariable Long id){
          trackService.deleteTrack(id);
     }
+
 }

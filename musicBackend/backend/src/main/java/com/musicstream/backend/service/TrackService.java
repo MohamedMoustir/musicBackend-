@@ -5,7 +5,6 @@ import com.musicstream.backend.dto.TrackDTO;
 import com.musicstream.backend.model.Track;
 import com.musicstream.backend.repository.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -21,9 +20,7 @@ public class TrackService {
     @Autowired
     private TrackRepository trackRepository;
 
-
     public Track saveTrack(CreateTrackDTO dto) throws IOException {
-
         Track track = Track.builder()
                 .title(dto.getTitle())
                 .artist(dto.getArtist())
@@ -42,6 +39,32 @@ public class TrackService {
 
         return trackRepository.save(track);
     }
+
+    public Track updateTrack(Long id, CreateTrackDTO dto) throws IOException {
+        Track track = getTrackById(id);
+
+        track.setTitle(dto.getTitle());
+        track.setArtist(dto.getArtist());
+        track.setDescription(dto.getDescription());
+        track.setCategory(dto.getCategory());
+
+        if (dto.getDuration() != null) {
+            track.setDuration(dto.getDuration());
+        }
+
+        if (dto.getFile() != null && !dto.getFile().isEmpty()) {
+            track.setAudioData(dto.getFile().getBytes());
+            track.setAudioContentType(dto.getFile().getContentType());
+        }
+
+        if (dto.getCover() != null && !dto.getCover().isEmpty()) {
+            track.setCoverData(dto.getCover().getBytes());
+            track.setCoverContentType(dto.getCover().getContentType());
+        }
+
+        return trackRepository.save(track);
+    }
+
 
     @Transactional(readOnly = true)
     public List<TrackDTO> getAllTracks() {
@@ -63,6 +86,7 @@ public class TrackService {
     public void deleteTrack(Long id){
         trackRepository.deleteById(id);
     }
+
     private TrackDTO mapToDTO(Track track) {
         TrackDTO dto = new TrackDTO();
         dto.setId(track.getId());
