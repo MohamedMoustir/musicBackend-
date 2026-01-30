@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TrackDetailComponent } from './track-detail.component';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe('TrackDetailComponent', () => {
   let component: TrackDetailComponent;
@@ -8,7 +9,10 @@ describe('TrackDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TrackDetailComponent]
+      imports: [TrackDetailComponent],
+      providers: [
+        provideMockStore({})
+      ]
     })
     .compileComponents();
 
