@@ -5,6 +5,7 @@ import com.musicstream.backend.dto.TrackDTO;
 import com.musicstream.backend.model.MusicCategory;
 import com.musicstream.backend.model.Track;
 import com.musicstream.backend.service.TrackService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -18,10 +19,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tracks")
+@AllArgsConstructor
 public class TrackController {
 
-    @Autowired
-    private TrackService trackService;
+
+    private final TrackService trackService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createTrack(@ModelAttribute CreateTrackDTO trackDTO) {
