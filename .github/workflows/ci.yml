@@ -7,7 +7,7 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-
+ 
   build-backend:
     runs-on: ubuntu-latest
     defaults:
@@ -24,8 +24,21 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build and Test (Maven)
+    - name: Run Unit Tests
       run: mvn clean verify
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./musicBackend/backend
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/music-backend:latest
 
  
   build-frontend:
@@ -50,5 +63,15 @@ jobs:
     - name: Run Tests (Headless)
       run: npm test -- --no-watch --no-progress --browsers=ChromeHeadless
 
-    - name: Build Production
-      run: npm run build -- --configuration=production
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./musicStream/music-stream
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/music-frontend:latest
