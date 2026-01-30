@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./musicBackend 
+        working-directory: ./musicBackend/backend
 
     steps:
     - uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./musicStream/music-stream
+        working-directory: ./musicStream/music-stream/frontend
 
     steps:
     - uses: actions/checkout@v3
@@ -42,7 +42,7 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
+        cache-dependency-path: musicStream/music-stream/package-lock.json
 
     - name: Install Dependencies
       run: npm ci
