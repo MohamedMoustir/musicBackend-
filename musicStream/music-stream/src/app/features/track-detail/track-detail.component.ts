@@ -1,11 +1,16 @@
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
+
 import { FormatTimePipe } from '../../shared/pipes/format-time.pipe';
 import { TrackService } from '../../core/services/track.service';
 import { AudioPlayerService } from '../../core/services/audio-player.service';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Track } from '../../core/models/track';
+
+import { deleteTrack  } from '../../core/store/track.actions';
 
 @Component({
   selector: 'app-track-detail',
@@ -14,58 +19,58 @@ import { Track } from '../../core/models/track';
   templateUrl: './track-detail.component.html',
   styleUrl: './track-detail.component.scss'
 })
-export class TrackDetailComponent {
+export class TrackDetailComponent implements OnInit {
 
-  private routr = inject(ActivatedRoute);
+  
+  private route = inject(ActivatedRoute); 
   private router = inject(Router);
-  private trackService = inject(TrackService);
-  public playerService = inject(AudioPlayerService);
   private sanitizer = inject(DomSanitizer);
+  private store = inject(Store);
+  
+  protected trackService = inject(TrackService);
+  protected playerService = inject(AudioPlayerService);
+
   track: Track | undefined;
 
   ngOnInit() {
-    const id = Number(this.routr.snapshot.paramMap.get('id'));
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    
     if (id) {
+   
       this.trackService.getTrackById(id).subscribe({
         next: (t) => {
-          if (t) this.track = t;
-          else this.router.navigate(['/library']);
-
+          if (t) {
+            this.track = t;
+          } else {
+            this.router.navigate(['/library']);
+          }
         },
         error: () => this.router.navigate(['/library'])
-
       });
-
     }
-
   }
 
   getCoverUrl(track: Track): SafeUrl | string {
     if (!track.cover) return '';
     if (typeof track.cover === 'string') return track.cover;
     if (track.cover instanceof File || track.cover instanceof Blob) {
-      return this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(track.cover));
+      return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(track.cover));
     }
     return '';
   }
-  
 
   play() {
     if (this.track) {
       this.playerService.playTrack(this.track, [this.track]);
     }
   }
-  
+
   delete() {
-    if (this.track && confirm('Voulez-vous vraiment supprimer ce morceau ?')) {
-      this.trackService.deleteTrack(this.track.id!).then(() => {
-        this.router.navigate(['/library']);
-      })
+    if (this.track && this.track.id && confirm('Voulez-vous vraiment supprimer ce morceau ?')) {
+      
+      this.store.dispatch(deleteTrack({ id: this.track.id }));
+      
+      this.router.navigate(['/library']);
     }
   }
-
-
-
-
-
 }
