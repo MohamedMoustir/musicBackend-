@@ -5,6 +5,7 @@ import com.musicstream.backend.dto.TrackDTO;
 import com.musicstream.backend.model.Track;
 import com.musicstream.backend.repository.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -57,6 +58,10 @@ public class TrackService {
     public TrackDTO getTrackDetails(Long id) {
         Track track = getTrackById(id);
         return mapToDTO(track);
+    }
+
+    public void deleteTrack(Long id){
+        trackRepository.deleteById(id);
     }
     private TrackDTO mapToDTO(Track track) {
         TrackDTO dto = new TrackDTO();

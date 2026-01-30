@@ -62,4 +62,9 @@ public class TrackController {
                 .contentType(MediaType.parseMediaType(track.getCoverContentType()))
                 .body(new ByteArrayResource(track.getCoverData()));
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteTrack(@PathVariable Long id){
+         trackService.deleteTrack(id);
+    }
 }
