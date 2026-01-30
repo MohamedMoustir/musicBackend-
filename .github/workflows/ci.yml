@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./musicStream/music-stream/frontend
+        working-directory: ./musicStream/music-stream
 
     steps:
     - uses: actions/checkout@v3
