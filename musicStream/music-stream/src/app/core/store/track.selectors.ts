@@ -13,3 +13,7 @@ export const selectIsLoading = createSelector(
     selectTrackState,
     (state) => state.loading
 )
+export const selectError = createSelector(
+  selectTrackState,
+  (state) => state.error
+);

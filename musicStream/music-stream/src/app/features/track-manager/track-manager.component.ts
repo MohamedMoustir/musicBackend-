@@ -7,7 +7,8 @@ import { CreateTrackDTO, MusicCategory } from '../../core/models/track';
 import { Title } from '@angular/platform-browser';
 import { getAudioDuration } from '../../shared/utils/audio-file.utils';
 import { Store } from '@ngrx/store';
-import { updateTrack } from '../../core/store/track.actions';
+import { addTrack, updateTrack } from '../../core/store/track.actions';
+import { selectError, selectIsLoading } from '../../core/store/track.selectors';
 @Component({
   selector: 'app-track-manager',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -26,7 +27,8 @@ export class TrackManagerComponent {
   isEditMode = false;
   trackId: number | null = null;
   existingTrack: any = null;
-
+  loading$ = this.store.select(selectIsLoading);
+  error$ = this.store.select(selectError);
   trackForm = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(50)]],
     artist: ['', [Validators.required]],
@@ -111,11 +113,11 @@ export class TrackManagerComponent {
           cover: this.selectedCoverFile || undefined
 
         }
-        this.store.dispatch(addTrack({ 
-        file: this.selectedAudioFile!, 
-        metadata 
-      }))
-       
+        this.store.dispatch(addTrack({
+          file: this.selectedAudioFile!,
+          metadata
+        }))
+
       }
     } catch (error) {
 

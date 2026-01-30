@@ -19,11 +19,11 @@
             </div>
 
             <div class="px-8 pb-8">
-                @if (trackService.error()) {
+                @if (error$ | async) {
                 <div
                     class="mb-6 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm font-medium flex items-center">
                     <i class="bi bi-exclamation-circle-fill mr-2"></i>
-                    {{ trackService.error() }}
+                    {{ error$ | async }}
                 </div>
                 }
 
@@ -121,9 +121,9 @@
                         </label>
                     </div>
 
-                    <button type="submit" [disabled]="trackService.isLoading()"
+                    <button type="submit" [disabled]="loading$ | async"
                         class="w-full mt-4 bg-zinc-900 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-lg shadow-zinc-900/10 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2">
-                        @if (trackService.isLoading()) {
+                        @if (loading$ | async) {
                         <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         <span>Traitement...</span>
                         } @else  {

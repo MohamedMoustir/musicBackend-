@@ -27,6 +27,11 @@ export const trackReducer = createReducer(
         loading: false,
         error: null
     })),
+    on(TrackActions.addTrackSuccess, (state, { track }) => ({
+        ...state,
+        tracks: [...state.tracks, track], 
+        loading: false
+    })),
     on(TrackActions.loadTracksFailure, (state, { error }) => ({
         ...state,
         loading: false,
@@ -36,6 +41,11 @@ export const trackReducer = createReducer(
         ...state,
         tracks: state.tracks.map(t => t.id === track.id ? track : t),
         error: null
+    })),
+    on(TrackActions.deleteTrackSuccess, (state, { id }) => ({
+        ...state,
+        tracks: state.tracks.filter(t => t.id !== id), 
+        loading: false
     })) 
 );
 
