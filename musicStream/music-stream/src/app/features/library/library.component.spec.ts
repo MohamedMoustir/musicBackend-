@@ -8,19 +8,17 @@ import { provideMockStore } from '@ngrx/store/testing';
 describe('LibraryComponent', () => {
   let component: LibraryComponent;
   let fixture: ComponentFixture<LibraryComponent>;
-
+const initialState = {
+    tracks: {
+      tracks: [],
+      loading: false,
+      error: null
+    }
+  };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LibraryComponent, HttpClientTestingModule],
-      providers: [provideMockStore({}),
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: {get:()=> null}
-            }
-          }
-        }
+      providers: [provideMockStore({initialState})
       ]
 
     })

@@ -6,12 +6,18 @@ import { provideMockStore } from '@ngrx/store/testing';
 describe('TrackDetailComponent', () => {
   let component: TrackDetailComponent;
   let fixture: ComponentFixture<TrackDetailComponent>;
-
+const initialState = {
+    tracks: {
+      tracks: [],
+      loading: false,
+      error: null
+    }
+  };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TrackDetailComponent],
       providers: [
-        provideMockStore({})
+        provideMockStore({initialState})
       ]
     })
     .compileComponents();
