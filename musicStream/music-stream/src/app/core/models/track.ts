@@ -4,13 +4,15 @@ export interface Track {
     id?: number;
     title: string;
     artist: string;
-    description: string;
+    description?: string; 
     category: MusicCategory; 
-    duration: number; 
-    addedDate: Date;          
-    file: Blob;    
-    streamUrl?: string;           
-    cover?: Blob;
+    duration?: number;   
+    addedDate: Date | string; 
+        file?: Blob | File;    
+    cover?: Blob | File | string;
+
+    streamUrl?: string;   
+    coverUrl?: string;
 
 }
 

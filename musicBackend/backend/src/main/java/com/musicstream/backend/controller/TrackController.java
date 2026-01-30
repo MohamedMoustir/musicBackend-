@@ -37,7 +37,10 @@ public class TrackController {
     public ResponseEntity<List<TrackDTO>> getAllTracks() {
         return ResponseEntity.ok(trackService.getAllTracks());
     }
-
+    @GetMapping("/{id}")
+    public ResponseEntity<TrackDTO> getTrack(@PathVariable Long id) {
+        return ResponseEntity.ok(trackService.getTrackDetails(id));
+    }
     @GetMapping("/{id}/stream")
     public ResponseEntity<ByteArrayResource> streamAudio(@PathVariable Long id) {
         Track track = trackService.getTrackById(id);

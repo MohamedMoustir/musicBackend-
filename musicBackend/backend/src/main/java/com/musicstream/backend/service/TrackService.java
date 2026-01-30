@@ -20,7 +20,7 @@ public class TrackService {
     @Autowired
     private TrackRepository trackRepository;
 
-    // Method jdida
+
     public Track saveTrack(CreateTrackDTO dto) throws IOException {
 
         Track track = Track.builder()
@@ -54,6 +54,10 @@ public class TrackService {
                 .orElseThrow(() -> new RuntimeException("Track not found with id: " + id));
     }
 
+    public TrackDTO getTrackDetails(Long id) {
+        Track track = getTrackById(id);
+        return mapToDTO(track);
+    }
     private TrackDTO mapToDTO(Track track) {
         TrackDTO dto = new TrackDTO();
         dto.setId(track.getId());
