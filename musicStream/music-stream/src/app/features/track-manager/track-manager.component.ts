@@ -75,55 +75,62 @@ export class TrackManagerComponent {
   }
 
   async onSubmit(): Promise<void> {
-    if (this.trackForm.invalid || !this.selectedAudioFile) return;
+    if (this.trackForm.invalid) return;
+    
     if (!this.isEditMode && !this.selectedAudioFile) {
       alert('Veuillez sélectionner un fichier audio.');
       return;
     }
 
     const formValue = this.trackForm.value;
-    let duration = this.existingTrack?.duration || 0;
-    if (this.selectedAudioFile) {
-      duration = await getAudioDuration(this.selectedAudioFile);
-    }
 
     try {
-
       if (this.isEditMode) {
-        const updatedTrack: any = {
-          ...this.existingTrack,
-          title: formValue.title!,
-          artist: formValue.artist!,
-          category: formValue.category!,
-          description: formValue.description || '',
-          file: this.selectedAudioFile || this.existingTrack.file,
-          cover: this.selectedCoverFile || this.existingTrack.cover,
-          duration: duration,
+        const formData = new FormData();
 
-        };
-        this.store.dispatch(updateTrack({ track: updatedTrack }));
+        formData.append('title', formValue.title!);
+        formData.append('artist', formValue.artist!);
+        formData.append('category', formValue.category!);
+        formData.append('description', formValue.description || '');
 
+        if (this.selectedAudioFile) {
+          formData.append('file', this.selectedAudioFile);
+          const duration = await getAudioDuration(this.selectedAudioFile);
+          formData.append('duration', duration.toString());
+        }
+
+        if (this.selectedCoverFile) {
+          formData.append('cover', this.selectedCoverFile);
+        }
+
+        this.store.dispatch(updateTrack({ 
+          trackId: this.trackId!, 
+          formData: formData 
+        }));
 
       } else {
+        
+        let duration = 0;
+        if (this.selectedAudioFile) {
+             duration = await getAudioDuration(this.selectedAudioFile);
+        }
+
         const metadata: CreateTrackDTO = {
           title: formValue.title!,
           artist: formValue.artist!,
           category: formValue.category as MusicCategory,
           description: formValue.description || '',
           cover: this.selectedCoverFile || undefined
+        };
 
-        }
         this.store.dispatch(addTrack({
           file: this.selectedAudioFile!,
           metadata
-        }))
-
+        }));
       }
     } catch (error) {
-
+      console.error('Erreur lors de la soumission', error);
     }
-
-
   }
 
 

@@ -44,8 +44,8 @@ export const updateTrackEffect = createEffect(
     (action$ = inject(Actions), trackService = inject(TrackService), router = inject(Router)) => {
         return action$.pipe(
             ofType(TrackActions.updateTrack),
-            mergeMap(({ track }) =>
-                trackService.updateTrack(track).pipe(
+            mergeMap(({ trackId, formData }) =>
+                trackService.updateTrack(trackId, formData).pipe(
                     map((updatedTrack) => {
                         router.navigate(['/library'])
                         return TrackActions.updateTrackSuccess({ track: updatedTrack });

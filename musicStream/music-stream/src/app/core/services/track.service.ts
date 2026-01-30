@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TrackService {
-  
+
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
@@ -16,7 +16,7 @@ export class TrackService {
     return this.http.get<Track[]>(this.apiUrl);
   }
 
-  
+
   getTrackById(id: string | number): Observable<Track> {
     return this.http.get<Track>(`${this.apiUrl}/${id}`);
   }
@@ -29,11 +29,9 @@ export class TrackService {
     return this.http.post(this.apiUrl, formData);
   }
 
-  
-  updateTrack(track: Partial<Track>): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${track.id}`, track);
+  updateTrack(id: number, trackData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, trackData);
   }
-
   deleteTrack(id: string | number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }

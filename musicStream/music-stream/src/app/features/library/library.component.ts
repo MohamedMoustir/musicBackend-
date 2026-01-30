@@ -12,7 +12,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectAllTracks, selectIsLoading } from '../../core/store/track.selectors';
-import { loadTracks } from '../../core/store/track.actions';
+import { deleteTrack, loadTracks } from '../../core/store/track.actions';
 
 @Component({
   selector: 'app-library',
@@ -38,8 +38,6 @@ export class LibraryComponent {
     this.store.dispatch(loadTracks());
   }
 
-
- 
 
   filteredTracks = computed(() => {
 
@@ -96,13 +94,13 @@ export class LibraryComponent {
   async deleteTrack(id: number, event: Event) {
     event.stopPropagation();
     if (confirm('Voulez-vous vraiment supprimer ce morceau ?')) {
-      // this.store.dispatch(deleteTrack({ id }));
+      this.store.dispatch(deleteTrack({ id }));
     }
   }
 
   drop(event: CdkDragDrop<Track[]>) {
    
-    // moveItemInArray(currentList, event.previousIndex, event.currentIndex);
+     moveItemInArray(this.filteredTracks(), event.previousIndex, event.currentIndex);
     
   }
 

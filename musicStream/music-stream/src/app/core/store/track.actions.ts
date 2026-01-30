@@ -27,8 +27,8 @@ export const addTrackSuccess = createAction(
 
 
 export const updateTrack = createAction(
-  '[Track Manager] Update Track',
-  props<{ track: Track }>()
+  '[Track] Update Track',
+  props<{ trackId: number, formData: FormData }>()
 );
 
 export const updateTrackSuccess = createAction(
