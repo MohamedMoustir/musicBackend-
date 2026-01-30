@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TrackManagerComponent } from './track-manager.component';
 import { provideMockStore } from '@ngrx/store/testing';
+import { ActivatedRoute } from '@angular/router';
 
 describe('TrackManagerComponent', () => {
   let component: TrackManagerComponent;
@@ -17,7 +18,13 @@ describe('TrackManagerComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TrackManagerComponent],
       providers: [
-        provideMockStore({initialState})
+        provideMockStore({ initialState: { tracks: { tracks: [], loading: false, error: null } } }),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: { get: (key: string) => null } } 
+          }
+        }
       ]
     })
       .compileComponents();

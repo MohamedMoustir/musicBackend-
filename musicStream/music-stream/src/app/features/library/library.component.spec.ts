@@ -18,8 +18,16 @@ const initialState = {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LibraryComponent, HttpClientTestingModule],
-      providers: [provideMockStore({initialState})
+      providers: [
+        provideMockStore({ initialState: { tracks: { tracks: [], loading: false, error: null } } }),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: { get: () => null } }
+          }
+        }
       ]
+   
 
     })
     .compileComponents();

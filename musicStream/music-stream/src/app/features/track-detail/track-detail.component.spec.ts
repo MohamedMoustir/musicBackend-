@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TrackDetailComponent } from './track-detail.component';
 import { provideMockStore } from '@ngrx/store/testing';
-
+import { ActivatedRoute } from '@angular/router';
 describe('TrackDetailComponent', () => {
   let component: TrackDetailComponent;
   let fixture: ComponentFixture<TrackDetailComponent>;
@@ -17,8 +17,15 @@ const initialState = {
     await TestBed.configureTestingModule({
       imports: [TrackDetailComponent],
       providers: [
-        provideMockStore({initialState})
+        provideMockStore({ initialState: { tracks: { tracks: [], loading: false, error: null } } }),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: { get: (key: string) => '1' } } 
+          }
+        }
       ]
+    
     })
     .compileComponents();
 
