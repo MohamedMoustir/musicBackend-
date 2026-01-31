@@ -5,6 +5,7 @@ import com.musicstream.backend.dto.TrackDTO;
 import com.musicstream.backend.model.MusicCategory;
 import com.musicstream.backend.model.Track;
 import com.musicstream.backend.repository.TrackRepository;
+import com.musicstream.backend.service.CloudinaryService;
 import com.musicstream.backend.service.TrackService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,9 +35,11 @@ class TrackServiceTest {
     @Mock
     private TrackRepository trackRepository;
 
+    @Mock
+    private CloudinaryService cloudinaryService;
+
     @InjectMocks
     private TrackService trackService;
-
 
     @BeforeEach
     void setup() {
@@ -69,21 +72,26 @@ class TrackServiceTest {
                 .id(1L)
                 .title("Test Title")
                 .artist("Test Artist")
+                .audioUrl("http://cloudinary.com/audio.mp3")
+                .coverUrl("http://cloudinary.com/cover.jpg")
                 .build();
 
+        when(cloudinaryService.uploadFile(any(), anyString())).thenReturn("http://cloudinary.com/fake-url");
         when(trackRepository.save(any(Track.class))).thenReturn(savedTrack);
 
         Track result = trackService.saveTrack(dto);
 
         assertNotNull(result);
         assertEquals("Test Title", result.getTitle());
+
+        verify(cloudinaryService, times(2)).uploadFile(any(), anyString());
         verify(trackRepository, times(1)).save(any(Track.class));
     }
 
     @Test
     void getAllTracks_ShouldReturnListOfDTOs() {
-        Track track1 = Track.builder().id(1L).title("T1").artist("A1").addedDate(LocalDateTime.now()).build();
-        Track track2 = Track.builder().id(2L).title("T2").artist("A2").addedDate(LocalDateTime.now()).build();
+        Track track1 = Track.builder().id(1L).title("T1").artist("A1").audioUrl("http://url1.com").addedDate(LocalDateTime.now()).build();
+        Track track2 = Track.builder().id(2L).title("T2").artist("A2").audioUrl("http://url2.com").addedDate(LocalDateTime.now()).build();
 
         when(trackRepository.findAll()).thenReturn(Arrays.asList(track1, track2));
 
@@ -91,7 +99,8 @@ class TrackServiceTest {
 
         assertEquals(2, result.size());
         assertEquals("T1", result.get(0).getTitle());
-        assertTrue(result.get(0).getStreamUrl().contains("/api/tracks/1/stream"));
+
+        assertEquals("http://url1.com", result.get(0).getStreamUrl());
     }
 
     @Test
@@ -118,13 +127,13 @@ class TrackServiceTest {
 
     @Test
     void getTrackDetails_ShouldReturnDTO() {
-        Track track = Track.builder().id(10L).title("Details").addedDate(LocalDateTime.now()).build();
+        Track track = Track.builder().id(10L).title("Details").audioUrl("http://details-url.com").addedDate(LocalDateTime.now()).build();
         when(trackRepository.findById(10L)).thenReturn(Optional.of(track));
 
         TrackDTO dto = trackService.getTrackDetails(10L);
 
         assertNotNull(dto);
         assertEquals("Details", dto.getTitle());
-        assertTrue(dto.getStreamUrl().contains("/api/tracks/10/stream"));
+        assertEquals("http://details-url.com", dto.getStreamUrl());
     }
 }
