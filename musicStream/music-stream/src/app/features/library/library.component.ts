@@ -6,7 +6,7 @@ import { AudioPlayerService } from '../../core/services/audio-player.service';
 import { FormatTimePipe } from '../../shared/pipes/format-time.pipe';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { Track } from '../../core/models/track';
+import { MusicCategory, Track } from '../../core/models/track';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
@@ -37,7 +37,7 @@ export class LibraryComponent {
   ngOnInit() {
     this.store.dispatch(loadTracks());
   }
-
+  categories: MusicCategory[] = ['Pop', 'Rock', 'Rap', 'Jazz', 'Classical', 'Electro', 'Other'];
 
   filteredTracks = computed(() => {
 
@@ -121,6 +121,6 @@ export class LibraryComponent {
   previous() {this.playerService.previous();}
   next() {this.playerService.next();}
   togglePlay() {this.playerService.togglePlay(); }
-  onstop() {this.playerService.seStop();}
+  onstop() {this.playerService.stop();}
 
 }
