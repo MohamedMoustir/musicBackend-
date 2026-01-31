@@ -1,8 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { TrackState } from "./track.reducer";
 
-
-
 export const selectTrackState = createFeatureSelector<TrackState>('tracks');
 
 export const selectAllTracks = createSelector(
