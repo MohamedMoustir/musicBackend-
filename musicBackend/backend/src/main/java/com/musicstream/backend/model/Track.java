@@ -22,13 +22,13 @@ public class Track {
     private MusicCategory category;
 
     private Double duration;
+
     private LocalDateTime addedDate;
 
-    @Lob
-    private byte[] audioData;
-    private String audioContentType;
 
-    @Lob
-    private byte[] coverData;
-    private String coverContentType;
+    private String audioUrl;
+    private String audioPublicId;
+
+    private String coverUrl;
+    private String coverPublicId;
 }
