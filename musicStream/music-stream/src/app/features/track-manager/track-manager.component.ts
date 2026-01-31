@@ -120,6 +120,7 @@ export class TrackManagerComponent {
           artist: formValue.artist!,
           category: formValue.category as MusicCategory,
           description: formValue.description || '',
+          file: this.selectedAudioFile!,
           cover: this.selectedCoverFile || undefined
         };
 
