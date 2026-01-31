@@ -15,7 +15,7 @@ import { deleteTrack  } from '../../core/store/track.actions';
 @Component({
   selector: 'app-track-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormatTimePipe, DatePipe, DecimalPipe],
+  imports: [CommonModule, RouterLink, FormatTimePipe, DatePipe],
   templateUrl: './track-detail.component.html',
   styleUrl: './track-detail.component.scss'
 })
@@ -50,14 +50,9 @@ export class TrackDetailComponent implements OnInit {
     }
   }
 
-  getCoverUrl(track: Track): SafeUrl | string {
-    if (!track.cover) return '';
-    if (typeof track.cover === 'string') return track.cover;
-    if (track.cover instanceof File || track.cover instanceof Blob) {
-      return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(track.cover));
-    }
-    return '';
-  }
+getCoverUrl(track: Track): string {
+  return track.coverUrl || 'assets/images/default-cover.png';
+}
 
   play() {
     if (this.track) {
