@@ -1,28 +1,29 @@
-
 export type MusicCategory = 'Pop' | 'Rock' | 'Rap' | 'Jazz' | 'Classical' | 'Electro' | 'Other';
+
+
 export interface Track {
-    id?: number;
+    id: number;          
     title: string;
     artist: string;
     description?: string; 
     category: MusicCategory; 
     duration?: number;   
-    addedDate: Date | string; 
-        file?: Blob | File;    
-    cover?: Blob | File | string;
+    addedDate: string;  
 
-    streamUrl?: string;   
-    coverUrl?: string;
+    streamUrl: string;  
+    coverUrl?: string;   
 
+   
 }
 
-export interface CreateTrackDTO{
+export interface CreateTrackDTO {
     title: string;
     artist: string;
-    description: string;
+    description?: string;
     category: MusicCategory;
-    cover?: File;
-
+    
+    file: File;          
+    cover?: File;        
 }
 
 export type ServiceStatus = 'idle' | 'loading' | 'error' | 'success';
