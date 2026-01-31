@@ -4,10 +4,10 @@ import com.musicstream.backend.dto.CreateTrackDTO;
 import com.musicstream.backend.dto.TrackDTO;
 import com.musicstream.backend.model.Track;
 import com.musicstream.backend.repository.TrackRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -15,10 +15,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class TrackService {
 
-    @Autowired
-    private TrackRepository trackRepository;
+
+    private  final TrackRepository trackRepository;
+
+
+    private final CloudinaryService cloudinaryService;
 
     public Track saveTrack(CreateTrackDTO dto) throws IOException {
         Track track = Track.builder()
@@ -28,13 +32,18 @@ public class TrackService {
                 .category(dto.getCategory())
                 .duration(dto.getDuration())
                 .addedDate(LocalDateTime.now())
-                .audioData(dto.getFile().getBytes())
-                .audioContentType(dto.getFile().getContentType())
                 .build();
 
+        if (dto.getFile() != null && !dto.getFile().isEmpty()) {
+            String audioUrl = cloudinaryService.uploadFile(dto.getFile(), "music_stream/tracks");
+            track.setAudioUrl(audioUrl);
+        }
+
         if (dto.getCover() != null && !dto.getCover().isEmpty()) {
-            track.setCoverData(dto.getCover().getBytes());
-            track.setCoverContentType(dto.getCover().getContentType());
+            String coverUrl = cloudinaryService.uploadFile(dto.getCover(), "music_stream/covers");
+            track.setCoverUrl(coverUrl);
+        } else {
+            track.setCoverUrl("https://res.cloudinary.com/demo/image/upload/v1/default_album_cover.png");
         }
 
         return trackRepository.save(track);
@@ -52,19 +61,20 @@ public class TrackService {
             track.setDuration(dto.getDuration());
         }
 
+        // Update Audio only if a new file is sent
         if (dto.getFile() != null && !dto.getFile().isEmpty()) {
-            track.setAudioData(dto.getFile().getBytes());
-            track.setAudioContentType(dto.getFile().getContentType());
+            String audioUrl = cloudinaryService.uploadFile(dto.getFile(), "music_stream/tracks");
+            track.setAudioUrl(audioUrl);
         }
 
+        // Update Cover only if a new file is sent
         if (dto.getCover() != null && !dto.getCover().isEmpty()) {
-            track.setCoverData(dto.getCover().getBytes());
-            track.setCoverContentType(dto.getCover().getContentType());
+            String coverUrl = cloudinaryService.uploadFile(dto.getCover(), "music_stream/covers");
+            track.setCoverUrl(coverUrl);
         }
 
         return trackRepository.save(track);
     }
-
 
     @Transactional(readOnly = true)
     public List<TrackDTO> getAllTracks() {
@@ -97,12 +107,8 @@ public class TrackService {
         dto.setDuration(track.getDuration());
         dto.setAddedDate(track.getAddedDate());
 
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-        dto.setStreamUrl(baseUrl + "/api/tracks/" + track.getId() + "/stream");
-
-        if (track.getCoverData() != null) {
-            dto.setCoverUrl(baseUrl + "/api/tracks/" + track.getId() + "/cover");
-        }
+        dto.setStreamUrl(track.getAudioUrl());
+        dto.setCoverUrl(track.getCoverUrl());
 
         return dto;
     }
