@@ -73,10 +73,12 @@ export class TrackManagerComponent {
       this.selectedCoverFile = input.files[0];
     }
   }
-
+  async getDuration(file: File): Promise<number> {
+    return getAudioDuration(file);
+  }
   async onSubmit(): Promise<void> {
     if (this.trackForm.invalid) return;
-    
+
     if (!this.isEditMode && !this.selectedAudioFile) {
       alert('Veuillez sélectionner un fichier audio.');
       return;
@@ -95,7 +97,7 @@ export class TrackManagerComponent {
 
         if (this.selectedAudioFile) {
           formData.append('file', this.selectedAudioFile);
-          const duration = await getAudioDuration(this.selectedAudioFile);
+          const duration = await this.getDuration(this.selectedAudioFile);
           formData.append('duration', duration.toString());
         }
 
@@ -103,16 +105,16 @@ export class TrackManagerComponent {
           formData.append('cover', this.selectedCoverFile);
         }
 
-        this.store.dispatch(updateTrack({ 
-          trackId: this.trackId!, 
-          formData: formData 
+        this.store.dispatch(updateTrack({
+          trackId: this.trackId!,
+          formData: formData
         }));
 
       } else {
-        
+
         let duration = 0;
         if (this.selectedAudioFile) {
-             duration = await getAudioDuration(this.selectedAudioFile);
+          duration = await this.getDuration(this.selectedAudioFile);
         }
 
         const metadata: CreateTrackDTO = {
