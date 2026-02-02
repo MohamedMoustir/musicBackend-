@@ -61,13 +61,11 @@ public class TrackService {
             track.setDuration(dto.getDuration());
         }
 
-        // Update Audio only if a new file is sent
         if (dto.getFile() != null && !dto.getFile().isEmpty()) {
             String audioUrl = cloudinaryService.uploadFile(dto.getFile(), "music_stream/tracks");
             track.setAudioUrl(audioUrl);
         }
 
-        // Update Cover only if a new file is sent
         if (dto.getCover() != null && !dto.getCover().isEmpty()) {
             String coverUrl = cloudinaryService.uploadFile(dto.getCover(), "music_stream/covers");
             track.setCoverUrl(coverUrl);

@@ -81,6 +81,15 @@
                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     onerror="this.src='assets/images/default-cover.png'">
                   
+                  <!-- <button (click)="toggleFavorite(track, $event)" 
+                    class="absolute top-3 left-3 z-20 w-8 h-8 rounded-lg flex items-center justify-center backdrop-blur-md transition-all duration-300 group/fav"
+                    [class.bg-red-500]="track.isFavorite"
+                    [class.bg-black/40]="!track.isFavorite"
+                    [class.text-white]="track.isFavorite"
+                    [class.text-zinc-400]="!track.isFavorite">
+                    <i class="bi" [class.bi-heart-fill]="track.isFavorite" [class.bi-heart]="!track.isFavorite"></i>
+                  </button> -->
+
                   <div (click)="onPlay(track)" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                     <div class="w-12 h-12 bg-lime-400 text-black rounded-full flex items-center justify-center shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                       @if(playerService.currentTrack()?.id === track.id && playerService.isPlaying()){
@@ -107,19 +116,13 @@
                 </div>
 
                 <div class="absolute top-6 right-6 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                  <button (click)="deleteTrack(track.id!, $event)" 
-                    class="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg"
-                    title="Delete">
+                  <button (click)="deleteTrack(track.id!, $event)" class="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg">
                     <i class="bi bi-trash text-sm"></i>
                   </button>
-                  <a [routerLink]="['/edit-track', track.id]" (click)="$event.stopPropagation()" 
-                    class="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-zinc-300 hover:bg-white hover:text-black transition-all shadow-lg"
-                    title="Edit">
+                  <a [routerLink]="['/edit-track', track.id]" (click)="$event.stopPropagation()" class="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-zinc-300 hover:bg-white hover:text-black transition-all shadow-lg">
                     <i class="bi bi-pencil-square text-sm"></i>
                   </a>
-                  <a [routerLink]="['/track', track.id]" (click)="$event.stopPropagation()" 
-                    class="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-lime-400 hover:bg-lime-400 hover:text-black transition-all shadow-lg"
-                    title="Details">
+                  <a [routerLink]="['/track', track.id]" (click)="$event.stopPropagation()" class="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-lime-400 hover:bg-lime-400 hover:text-black transition-all shadow-lg">
                     <i class="bi bi-info-circle text-sm"></i>
                   </a>
                 </div>

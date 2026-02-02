@@ -21,9 +21,9 @@ export interface CreateTrackDTO {
     artist: string;
     description?: string;
     category: MusicCategory;
-    
     file: File;          
     cover?: File;        
+    isFavorite?: boolean;
 }
 
 export type ServiceStatus = 'idle' | 'loading' | 'error' | 'success';
